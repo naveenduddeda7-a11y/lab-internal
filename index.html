@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Freshers Job Portal</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 420px;
+            margin: 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        input:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 5px #667eea;
+        }
+
+        .skills label {
+            display: block;
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        .link {
+            text-align: center;
+            color: #667eea;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        #dashboard {
+            display: none;
+            padding: 30px;
+        }
+
+        #loginForm, #registerForm, #dashboard {
+            transition: all 0.5s ease-in-out;
+        }
+
+        .section-title {
+            color: white;
+            margin-top: 20px;
+        }
+
+        .job-card {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .job-card a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 15px;
+            background: #667eea;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .job-card a:hover {
+            background: #764ba2;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media(max-width: 500px) {
+            .container {
+                width: 90%;
+            }
+        }
+    </style>
+
+    <script>
+        const jobs = [
+            {skill: "java", company: "TCS", role: "Java Developer", link: "https://www.tcs.com/careers"},
+            {skill: "python", company: "Infosys", role: "Python Developer", link: "https://www.infosys.com/careers"},
+            {skill: "web", company: "Wipro", role: "Web Developer", link: "https://careers.wipro.com"},
+            {skill: "c", company: "HCL", role: "C Programmer", link: "https://www.hcltech.com/careers"},
+            {skill: "data", company: "Accenture", role: "Data Analyst", link: "https://www.accenture.com/in-en/careers"}
+        ];
+
+        function showRegister() {
+            document.getElementById("loginForm").style.display = "none";
+            document.getElementById("registerForm").style.display = "block";
+        }
+
+        function showLogin() {
+            document.getElementById("registerForm").style.display = "none";
+            document.getElementById("loginForm").style.display = "block";
+        }
+
+        function loginUser() {
+            let name = document.getElementById("loginName").value;
+            let phone = document.getElementById("loginPhone").value;
+            let email = document.getElementById("loginEmail").value;
+
+            if(name && phone && email) {
+                document.getElementById("welcomeUser").innerText = "Welcome, " + name + " 👋";
+                document.getElementById("loginForm").style.display = "none";
+                document.getElementById("dashboard").style.display = "block";
+
+                // Show all jobs by default
+                showJobs(["java","python","web","c","data"]);
+            } else {
+                alert("Please fill all fields!");
+            }
+            return false;
+        }
+
+        function registerUser() {
+            let name = document.getElementById("regName").value;
+            let phone = document.getElementById("regPhone").value;
+            let email = document.getElementById("regEmail").value;
+            let resume = document.getElementById("regResume").value;
+
+            let selectedSkills = [];
+            document.querySelectorAll('input[name="skills"]:checked')
+                .forEach(skill => selectedSkills.push(skill.value));
+
+            if(name && phone && email && resume && selectedSkills.length > 0) {
+                document.getElementById("welcomeUser").innerText = "Welcome, " + name + " 👋";
+                document.getElementById("registerForm").style.display = "none";
+                document.getElementById("dashboard").style.display = "block";
+                showJobs(selectedSkills);
+            } else {
+                alert("Please fill all fields and select at least one skill!");
+            }
+            return false;
+        }
+
+        function showJobs(userSkills) {
+            let jobList = document.getElementById("jobList");
+            jobList.innerHTML = "";
+            let found = false;
+
+            jobs.forEach(job => {
+                if(userSkills.includes(job.skill)) {
+                    found = true;
+                    jobList.innerHTML += `
+                        <div class="job-card">
+                            <h3>${job.role}</h3>
+                            <p>Company: ${job.company}</p>
+                            <a href="${job.link}" target="_blank">Apply Now</a>
+                        </div>
+                    `;
+                }
+            });
+
+            if(!found) {
+                jobList.innerHTML = `
+                    <div class="job-card">
+                        <h3>No Recommended Jobs Yet</h3>
+                        <p>Please register and select your skills to see personalized job opportunities.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function logoutUser() {
+            document.getElementById("dashboard").style.display = "none";
+            document.getElementById("loginForm").style.display = "block";
+        }
+    </script>
+</head>
+
+<body>
+
+<header>🚀 Freshers Job Portal</header>
+
+<div class="container" id="loginForm">
+    <h2>Login</h2>
+    <form onsubmit="return loginUser()">
+        <input type="text" id="loginName" placeholder="Enter Name">
+        <input type="tel" id="loginPhone" placeholder="Enter Phone Number">
+        <input type="email" id="loginEmail" placeholder="Enter Email">
+        <button type="submit">Login</button>
+    </form>
+    <div class="link" onclick="showRegister()">New User? Register Here</div>
+</div>
+
+<div class="container" id="registerForm" style="display:none;">
+    <h2>Register</h2>
+    <form onsubmit="return registerUser()">
+        <input type="text" id="regName" placeholder="Enter Full Name">
+        <input type="tel" id="regPhone" placeholder="Enter Phone Number">
+        <input type="email" id="regEmail" placeholder="Enter Email">
+
+        <h4>Select Your Skills:</h4>
+        <div class="skills">
+            <label><input type="checkbox" name="skills" value="java"> Java</label>
+            <label><input type="checkbox" name="skills" value="python"> Python</label>
+            <label><input type="checkbox" name="skills" value="web"> Web Development</label>
+            <label><input type="checkbox" name="skills" value="c"> C Programming</label>
+            <label><input type="checkbox" name="skills" value="data"> Data Analysis</label>
+        </div>
+
+        <input type="file" id="regResume" accept=".pdf,.doc,.docx">
+        <button type="submit">Register</button>
+    </form>
+    <div class="link" onclick="showLogin()">Already Registered? Login Here</div>
+</div>
+
+<div id="dashboard">
+    <h2 id="welcomeUser" style="color:white;"></h2>
+    <button onclick="logoutUser()" style="width:150px;margin-bottom:20px;">Logout</button>
+
+    <h2 class="section-title">Recommended Job Opportunities</h2>
+    <div id="jobList"></div>
+
+    <h2 class="section-title">Current Vacancies</h2>
+
+    <div class="job-card">
+        <h3>Graduate Trainee - TCS</h3>
+        <a href="https://www.tcs.com/careers" target="_blank">View Vacancy</a>
+    </div>
+
+    <div class="job-card">
+        <h3>System Engineer - Infosys</h3>
+        <a href="https://www.infosys.com/careers" target="_blank">View Vacancy</a>
+    </div>
+
+    <div class="job-card">
+        <h3>Associate Developer - Wipro</h3>
+        <a href="https://careers.wipro.com" target="_blank">View Vacancy</a>
+    </div>
+</div>
+
+</body>
+</html>
